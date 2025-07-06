@@ -5,6 +5,7 @@ import seaborn as sns
 from sklearn.preprocessing import StandardScaler
 from sklearn.neighbors import NearestNeighbors
 import helper_functions as hf
+from sklearn.decomposition import PCA
 
 
 train_data = pd.read_csv('data.csv')
@@ -97,4 +98,27 @@ def recommend_songs(name, train_data):
             print(f"{i}. {recommended_song['name']} by {recommended_song['artists']} (Popularity: {recommended_song['popularity']}) Year: {recommended_song['year']} Explicit: {'Yes' if recommended_song['explicit'] else 'No'}")
         return song_index, indices[0][1:]
     
-recommend_songs('hurt', train_data)
+# Plot recommended songs in 2D space
+def plot_recommendations(song_name, train_data):
+    pca = PCA(n_components=2)
+    X_pca = pca.fit_transform(scaler.fit_transform(train_data[features]))
+    train_data['pca_x'] = X_pca[:, 0]
+    train_data['pca_y'] = X_pca[:, 1]
+
+    plt.figure(figsize=(12, 8))
+    plt.scatter(train_data['pca_x'], train_data['pca_y'], alpha=0.2, color='gray', label='All Songs')
+
+    song_index, recommended_indices = recommend_songs(song_name, train_data)
+    plt.scatter(train_data.iloc[song_index]['pca_x'], train_data.iloc[song_index]['pca_y'], color='blue', label='Selected Song', s=100)
+    if recommended_indices is not None:
+        recommended_songs = train_data.iloc[recommended_indices]
+        plt.scatter(recommended_songs['pca_x'], recommended_songs['pca_y'], color='red', label='Recommended Songs')
+
+    plt.title('Recommended Songs in 2D PCA Space')
+    plt.xlabel('PCA Component 1')
+    plt.ylabel('PCA Component 2')
+    plt.legend()
+    plt.show()
+
+plot_recommendations('hurt', train_data)
+
