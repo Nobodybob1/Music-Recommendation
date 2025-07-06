@@ -27,14 +27,15 @@ def get_artists(track_name, df):
         return None
     
     artists = matches['artists'].unique()
-    if len(artists) == 1:
-        return artists[0]
-    else:
-        print("Multiple artists found for this track:")
-        for i, artist in enumerate(artists):
-            print(f"{i + 1}: {artist}")
-        choice = int(input("Select the artist by number: ")) - 1
-        return artists[choice] if 0 <= choice < len(artists) else None
+    # if len(artists) == 1:
+    #     return artists[0]
+    # else:
+    #     print("Multiple artists found for this track:")
+    #     for i, artist in enumerate(artists):
+    #         print(f"{i + 1}: {artist}")
+    #     choice = int(input("Select the artist by number: ")) - 1
+    #     return artists[choice] if 0 <= choice < len(artists) else None
+    return artists
 
 # Filter data
 filters = {
