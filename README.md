@@ -25,7 +25,7 @@ It also includes a 2D **PCA visualization** showing where the input song and rec
 - app.py # Main Streamlit app
 - helper_functions.py # Cleaning data, Fuzzy searching, getting artists, filtering
 - main.ipynb # Notebook with visualizing data and general logic
-- requirements.txt - # Requirements
+- requirements.txt # Requirements
 
 
 
