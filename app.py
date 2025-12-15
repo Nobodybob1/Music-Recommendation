@@ -19,8 +19,8 @@ scaler = StandardScaler()
 def recommend_songs(name, train_data):
     name = name.strip()
     if name not in train_data['name'].values:
-        names = hf.find_similar_tracks(name, train_data)
-        names = list(set(names))  # Remove duplicates
+        names = hf.find_similar_tracks(name, train_data) or []
+        names = sorted(set(names))  # Remove duplicates + stable ordering
         if names:
             selected_name = st.selectbox("Select a similar track:", names)
             name = selected_name
@@ -48,7 +48,8 @@ def recommend_songs(name, train_data):
         #     return None
         
     artists = hf.get_artists(name, train_data)
-    if not artists.any():
+    artists = list(artists) if artists is not None else []
+    if len(artists) == 0:
         st.error("Artist selection failed. Please try again.")
         return None
     artist = st.selectbox("Select the artist:", artists)
@@ -73,6 +74,9 @@ def recommend_songs(name, train_data):
         if not ((X_filtered['name'] == name) & (X_filtered['artists'] == artist)).any():
             # Add the song to the filtered data
             song_data = train_data[(train_data['name'] == name) & (train_data['artists'] == artist)]
+            if song_data.empty:
+                st.error("The selected song is not found in the dataset.")
+                return None
             X_filtered = pd.concat([X_filtered, song_data], ignore_index=True)
 
         model = NearestNeighbors(n_neighbors=6, metric='cosine')
@@ -212,5 +216,7 @@ st.title("Music Recommendation System")
 song_name = st.text_input("Enter a song name: ")
 if song_name:
     st.write(f"Searching for recommendations for '{song_name}'...")
-    song_index, recommended_indices = recommend_songs(song_name, train_data)
-    plot_recommendations(song_index, train_data, recommended_indices)
+    result = recommend_songs(song_name, train_data)
+    if result is not None:
+        song_index, recommended_indices = result
+        plot_recommendations(song_index, train_data, recommended_indices)

@@ -15,7 +15,7 @@ def find_similar_tracks(track_name, df):
     names = get_close_matches(track_name, df['name'].tolist())
     if not names:
         print("Track not found.")
-        return None
+        return []
 
     return names
 
@@ -24,7 +24,7 @@ def get_artists(track_name, df):
     matches = df[df['name'].str.lower().str.strip() == track_name.lower().strip()]
     if matches.empty:
         print("No matching track found.")
-        return None
+        return []
     
     artists = matches['artists'].unique()
     # if len(artists) == 1:
